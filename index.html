@@ -145,41 +145,43 @@
   <script>
     const sheetId = '1gk9LSLhpkuYxv_awtqIFqtjb7TgA6v7_vKuHZ17cEz0';
     const sheetName = 'Sheet1';
-    const sheetUrl = `https://docs.google.com/spreadsheets/d/1gk9LSLhpkuYxv_awtqIFqtjb7TgA6v7_vKuHZ17cEz0/edit?usp=sharing`;
+    const sheetUrl = `const sheetUrl = `https://docs.google.com/spreadsheets/d/${1gk9LSLhpkuYxv_awtqIFqtjb7TgA6v7_vKuHZ17cEz0}/gviz/tq?tqx=out:json`;
     const scriptUrl = 'https://script.google.com/macros/s/AKfycbzt6L68Yy51794iVW2ROVlvyaypBS2bUQRxSreyVPrRBfNHyz9QEeYQbOl45MufanT-8Q/exec'; // ganti dengan URL GAS kamu
 
-    function loadSheetData() {
-      fetch(sheetUrl)
-        .then(res => res.text())
-        .then(rep => {
-          const data = JSON.parse(rep.substring(47).slice(0, -2));
-          const table = document.getElementById('sheet-data');
-          const thead = table.querySelector('thead');
-          const tbody = table.querySelector('tbody');
-          thead.innerHTML = '';
-          tbody.innerHTML = '';
+   function loadSheetData() {
+  fetch(sheetUrl)
+    .then(res => res.text())
+    .then(rep => {
+      const data = JSON.parse(rep.substring(47).slice(0, -2));
+      const table = document.getElementById('sheet-data');
+      const thead = table.querySelector('thead');
+      const tbody = table.querySelector('tbody');
+      thead.innerHTML = '';
+      tbody.innerHTML = '';
 
-          const headers = data.table.cols.map(col => col.label);
-          const headRow = document.createElement('tr');
-          headers.forEach(headerText => {
-            const th = document.createElement('th');
-            th.textContent = headerText;
-            headRow.appendChild(th);
-          });
-          thead.appendChild(headRow);
+      const headers = data.table.cols.map(col => col.label || '');
+      const headRow = document.createElement('tr');
+      headers.forEach(headerText => {
+        const th = document.createElement('th');
+        th.textContent = headerText;
+        headRow.appendChild(th);
+      });
+      thead.appendChild(headRow);
 
-          data.table.rows.forEach(row => {
-            const tr = document.createElement('tr');
-            row.c.forEach(cell => {
-              const td = document.createElement('td');
-              td.textContent = cell ? cell.v : '';
-              tr.appendChild(td);
-            });
-            tbody.appendChild(tr);
-          });
+      data.table.rows.forEach(row => {
+        const tr = document.createElement('tr');
+        row.c.forEach(cell => {
+          const td = document.createElement('td');
+          td.textContent = cell ? cell.v : '';
+          tr.appendChild(td);
         });
-    }
-
+        tbody.appendChild(tr);
+      });
+    })
+    .catch(err => {
+      console.error('Gagal memuat data dari sheet:', err);
+    });
+}
     loadSheetData();
 
     document.getElementById('data-form').addEventListener('submit', function(e) {
