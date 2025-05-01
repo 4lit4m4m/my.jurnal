@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jurnal Pembelajaran Harian</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f0f4f8;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+      margin-top: 40px;
+    }
+
+    form {
+      background: #fff;
+      max-width: 600px;
+      margin: 30px auto;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 15px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    .mood-imgs {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    .mood-imgs label {
+      flex: 1;
+      text-align: center;
+    }
+
+    .mood-imgs img {
+      max-width: 60px;
+      cursor: pointer;
+      transition: transform 0.2s ease-in-out;
+    }
+
+    .mood-imgs img:hover {
+      transform: scale(1.1);
+    }
+
+    button {
+      background-color: #3498db;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    table {
+      width: 90%;
+      margin: 30px auto;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 12px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    th {
+      background-color: #3498db;
+      color: white;
+    }
+
+    tr:hover {
+      background-color: #f9f9f9;
+    }
+  </style>
+</head>
+<body>
+  <h2>Jurnal Pembelajaran Harian</h2>
+  <form id="data-form">
+    <label>Tanggal:
+      <input type="date" name="tanggal" required>
+    </label>
+    <label>Mata Pelajaran:
+      <input type="text" name="mapel" required>
+    </label>
+    <label>Tugas yang Harus Dikerjakan:
+      <textarea name="tugas" rows="2" required></textarea>
+    </label>
+    <label>Target Belajar:
+      <textarea name="target" rows="2" required></textarea>
+    </label>
+    <label>Catatan Penting:
+      <textarea name="catatan" rows="2"></textarea>
+    </label>
+    <label>Mood Hari Ini:</label>
+    <div class="mood-imgs">
+      <label><input type="radio" name="mood" value="Senang" required><br><img src="https://i.imgur.com/1X9a4JY.png" alt="senang"></label>
+      <label><input type="radio" name="mood" value="Biasa"><br><img src="https://i.imgur.com/Xzw3yMI.png" alt="biasa"></label>
+      <label><input type="radio" name="mood" value="Sedih"><br><img src="https://i.imgur.com/JKCYsBt.png" alt="sedih"></label>
+    </div>
+    <br>
+    <button type="submit">Kirim</button>
+  </form>
+
+  <h2>Data dari Google Sheets</h2>
+  <table id="sheet-data">
+    <thead></thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const sheetId = '1gk9LSLhpkuYxv_awtqIFqtjb7TgA6v7_vKuHZ17cEz0';
+    const sheetName = 'Sheet1';
+    const sheetUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${sheetName}`;
+    const scriptUrl = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec'; // ganti dengan URL GAS kamu
+
+    function loadSheetData() {
+      fetch(sheetUrl)
+        .then(res => res.text())
+        .then(rep => {
+          const data = JSON.parse(rep.substring(47).slice(0, -2));
+          const table = document.getElementById('sheet-data');
+          const thead = table.querySelector('thead');
+          const tbody = table.querySelector('tbody');
+          thead.innerHTML = '';
+          tbody.innerHTML = '';
+
+          const headers = data.table.cols.map(col => col.label);
+          const headRow = document.createElement('tr');
+          headers.forEach(headerText => {
+            const th = document.createElement('th');
+            th.textContent = headerText;
+            headRow.appendChild(th);
+          });
+          thead.appendChild(headRow);
+
+          data.table.rows.forEach(row => {
+            const tr = document.createElement('tr');
+            row.c.forEach(cell => {
+              const td = document.createElement('td');
+              td.textContent = cell ? cell.v : '';
+              tr.appendChild(td);
+            });
+            tbody.appendChild(tr);
+          });
+        });
+    }
+
+    loadSheetData();
+
+    document.getElementById('data-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const data = Object.fromEntries(formData.entries());
+
+      fetch(scriptUrl, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: { 'Content-Type': 'application/json' }
+      })
+      .then(res => res.text())
+      .then(response => {
+        alert('Data berhasil dikirim!');
+        this.reset();
+        loadSheetData();
+      })
+      .catch(err => {
+        alert('Terjadi kesalahan.');
+        console.error(err);
+      });
+    });
+  </script>
+</body>
+</html>
