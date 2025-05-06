@@ -143,68 +143,68 @@
   </table>
 
   <script>
-    const sheetId = '1gk9LSLhpkuYxv_awtqIFqtjb7TgA6v7_vKuHZ17cEz0';
-    const sheetName = 'DailyPlanner';
-    const sheetUrl = 'https://docs.google.com/spreadsheets/d/1gk9LSLhpkuYxv_awtqIFqtjb7TgA6v7_vKuHZ17cEz0/edit?usp=sharing';
-    const scriptUrl = 'https://script.google.com/macros/s/AKfycbyjmhIud9rsaikGuLGeSENxBmrOuOrHECf5vyml7i1OxGJeP-VdKVT5w1Li9eObDcVs9g/exec'; // ganti dengan URL GAS kamu
+  const scriptUrl = 'https://script.google.com/macros/s/AKfycbyjmhIud9rsaikGuLGeSENxBmrOuOrHECf5vyml7i1OxGJeP-VdKVT5w1Li9eObDcVs9g/exec'; // Ganti dengan URL GAS Anda
 
-   function loadSheetData() {
- fetch(scriptUrl, {
-  method: 'POST',
-  body: JSON.stringify(data),
-  headers: {
-    'Content-Type': 'application/json'
-  }
-})
-.then(res => res.text())
-.then(response => {
-  alert('Data berhasil dikirim!');
-  document.getElementById('data-form').reset();
-  loadSheetData();
-})
-.catch(err => {
-  alert('Terjadi kesalahan saat mengirim data.');
-  console.error(err);
-});
-      thead.appendChild(headRow);
+  function loadSheetData() {
+    fetch(scriptUrl)
+      .then(response => response.json())
+      .then(data => {
+        const table = document.getElementById('sheet-data');
+        const thead = table.querySelector('thead');
+        const tbody = table.querySelector('tbody');
+        thead.innerHTML = '';
+        tbody.innerHTML = '';
 
-      data.table.rows.forEach(row => {
-        const tr = document.createElement('tr');
-        row.c.forEach(cell => {
-          const td = document.createElement('td');
-          td.textContent = cell ? cell.v : '';
-          tr.appendChild(td);
+        // Asumsikan baris pertama adalah header
+        const headers = data[0];
+        const headRow = document.createElement('tr');
+        headers.forEach(headerText => {
+          const th = document.createElement('th');
+          th.textContent = headerText;
+          headRow.appendChild(th);
         });
-        tbody.appendChild(tr);
-      });
-    })
-    .catch(err => {
-      console.error('Gagal memuat data dari sheet:', err);
-    });
-}
-    loadSheetData();
+        thead.appendChild(headRow);
 
-    document.getElementById('data-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const formData = new FormData(this);
-      const data = Object.fromEntries(formData.entries());
-
-      fetch(scriptUrl, {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: { 'Content-Type': 'application/json' }
-      })
-      .then(res => res.text())
-      .then(response => {
-        alert('Data berhasil dikirim!');
-        this.reset();
-        loadSheetData();
+        // Sisanya adalah data
+        data.slice(1).forEach(row => {
+          const tr = document.createElement('tr');
+          row.forEach(cell => {
+            const td = document.createElement('td');
+            td.textContent = cell;
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
       })
       .catch(err => {
-        alert('Terjadi kesalahan.');
-        console.error(err);
+        console.error('Gagal memuat data dari sheet:', err);
       });
+  }
+
+  document.getElementById('data-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData.entries());
+
+    fetch(scriptUrl, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: { 'Content-Type': 'application/json' }
+    })
+    .then(res => res.text())
+    .then(response => {
+      alert('Data berhasil dikirim!');
+      this.reset();
+      loadSheetData();
+    })
+    .catch(err => {
+      alert('Terjadi kesalahan.');
+      console.error(err);
     });
-  </script>
+  });
+
+  // Muat data saat halaman dimuat
+  window.onload = loadSheetData;
+</script>
 </body>
 </html>
