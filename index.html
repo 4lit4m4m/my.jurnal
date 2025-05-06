@@ -2,121 +2,282 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Daily Planner</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jurnal Pembelajaran</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f0f4f8;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+      margin-top: 40px;
+    }
+
+    form {
+      background: #fff;
+      max-width: 600px;
+      margin: 30px auto;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 15px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    .mood-imgs {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    .mood-imgs label {
+      flex: 1;
+      text-align: center;
+    }
+
+    .mood-imgs img {
+      max-width: 60px;
+      cursor: pointer;
+      transition: transform 0.2s ease-in-out;
+    }
+
+    .mood-imgs img:hover {
+      transform: scale(1.1);
+    }
+
+    button {
+      background-color: #3498db;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    table {
+      width: 90%;
+      margin: 30px auto;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 12px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    th {
+      background-color: #3498db;
+      color: white;
+    }
+
+    tr:hover {
+      background-color: #f9f9f9;
+    }
+
+    .btn {
+      padding: 6px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .btn-warning {
+      background-color: #f39c12;
+      color: white;
+    }
+
+    .btn-warning:hover {
+      background-color: #e67e22;
+    }
+
+    .btn-danger {
+      background-color: #e74c3c;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background-color: #c0392b;
+    }
+  </style>
 </head>
-<body class="bg-light">
-
-  <div class="container my-5">
-    <h2 class="mb-4 text-center">📅 Daily Planner</h2>
-
-    <!-- Form Input -->
-    <form id="data-form" class="p-4 bg-white rounded shadow-sm">
-      <div class="mb-3">
-        <label class="form-label">Tanggal</label>
-        <input type="date" name="tanggal" class="form-control" required>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Mata Pelajaran</label>
-        <input type="text" name="mapel" class="form-control" required>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Tugas</label>
-        <input type="text" name="tugas" class="form-control" required>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Target</label>
-        <input type="text" name="target" class="form-control">
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Catatan</label>
-        <textarea name="catatan" class="form-control" rows="2"></textarea>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Mood Hari Ini</label>
-        <select name="mood" class="form-select">
-          <option value="😊 Bahagia">😊 Bahagia</option>
-          <option value="😐 Biasa Saja">😐 Biasa Saja</option>
-          <option value="😔 Sedih">😔 Sedih</option>
-        </select>
-      </div>
-      <button type="submit" class="btn btn-primary w-100">Simpan</button>
-    </form>
-
-    <!-- Tabel Data -->
-    <div class="mt-5">
-      <h4 class="mb-3 text-center">📋 Data Rencana Harian</h4>
-      <div class="table-responsive">
-        <table class="table table-bordered table-striped" id="sheet-data">
-          <thead class="table-primary text-center"></thead>
-          <tbody></tbody>
-        </table>
-      </div>
+<body>
+  <h2>Jurnal Pembelajaran Harian</h2>
+  <form id="data-form">
+    <label>Tanggal:
+      <input type="date" name="tanggal" required>
+    </label>
+    <label>Mata Pelajaran:
+      <input type="text" name="mapel" required>
+    </label>
+    <label>Tugas yang Harus Dikerjakan:
+      <textarea name="tugas" rows="2" required></textarea>
+    </label>
+    <label>Target Belajar:
+      <textarea name="target" rows="2" required></textarea>
+    </label>
+    <label>Catatan Penting:
+      <textarea name="catatan" rows="2"></textarea>
+    </label>
+    <label>Mood Hari Ini:</label>
+    <div class="mood-imgs">
+      <label><input type="radio" name="mood" value="Senang" required><br><img src="https://png.pngtree.com/png-vector/20220520/ourmid/pngtree-happy-emoji-emoticon-showing-double-thumbs-up-like-png-image_4708251.png"></label>
+      <label><input type="radio" name="mood" value="Biasa"><br><img src="https://www.hipwee.com/wp-content/uploads/2016/09/hipwee-emojiisland.com_-1.png"></label>
+      <label><input type="radio" name="mood" value="Sedih"><br><img src="https://cdn.pixabay.com/photo/2020/12/30/01/45/smile-5872116_1280.png"></label>
     </div>
-  </div>
+    <br>
+    <button type="submit">Kirim</button>
+  </form>
 
-  <!-- Script -->
+  <h2>Data dari Google Sheets</h2>
+  <table id="sheet-data">
+    <thead>
+      <tr>
+        <th>Tanggal</th>
+        <th>Mata Pelajaran</th>
+        <th>Tugas</th>
+        <th>Target Belajar</th>
+        <th>Catatan</th>
+        <th>Mood</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
   <script>
-    const scriptUrl = 'https://script.google.com/macros/s/AKfycbyjmhIud9rsaikGuLGeSENxBmrOuOrHECf5vyml7i1OxGJeP-VdKVT5w1Li9eObDcVs9g/exec'; // Ganti dengan URL Anda
+    const sheetId = '1gk9LSLhpkuYxv_awtqIFqtjb7TgA6v7_vKuHZ17cEz0';
+    const sheetName = 'DailyPlanner';
+    const scriptUrl = 'https://script.google.com/macros/s/AKfycbyjmhIud9rsaikGuLGeSENxBmrOuOrHECf5vyml7i1OxGJeP-VdKVT5w1Li9eObDcVs9g/exec'; // ganti dengan URL GAS kamu
 
-    // Ambil dan tampilkan data dari Sheet
     function loadSheetData() {
       fetch(scriptUrl)
         .then(res => res.json())
-        .then(({ headers, rows }) => {
-          const thead = document.querySelector('#sheet-data thead');
+        .then(response => {
           const tbody = document.querySelector('#sheet-data tbody');
-          thead.innerHTML = '';
-          tbody.innerHTML = '';
-
-          // Header
-          const headRow = document.createElement('tr');
-          headers.forEach(text => {
-            const th = document.createElement('th');
-            th.textContent = text;
-            headRow.appendChild(th);
-          });
-          thead.appendChild(headRow);
-
-          // Data rows
-          rows.forEach(row => {
+          tbody.innerHTML = ''; // Clear existing rows
+          response.rows.forEach((row, index) => {
             const tr = document.createElement('tr');
+            tr.dataset.index = index;
             row.forEach(cell => {
               const td = document.createElement('td');
               td.textContent = cell;
               tr.appendChild(td);
             });
+
+            // Aksi: Edit dan Hapus
+            const actionTd = document.createElement('td');
+            actionTd.innerHTML = `
+              <button class="btn btn-warning me-1 btn-edit">Edit</button>
+              <button class="btn btn-danger btn-delete">Hapus</button>
+            `;
+            tr.appendChild(actionTd);
             tbody.appendChild(tr);
           });
+
+          // Menambahkan event listener untuk Edit dan Hapus
+          document.querySelectorAll('.btn-edit').forEach(btn => {
+            btn.addEventListener('click', function() {
+              const row = this.closest('tr');
+              const cells = row.querySelectorAll('td');
+              const index = row.dataset.index;
+
+              document.querySelector('[name="tanggal"]').value = cells[0].textContent;
+              document.querySelector('[name="mapel"]').value = cells[1].textContent;
+              document.querySelector('[name="tugas"]').value = cells[2].textContent;
+              document.querySelector('[name="target"]').value = cells[3].textContent;
+              document.querySelector('[name="catatan"]').value = cells[4].textContent;
+              document.querySelector('[name="mood"]').value = cells[5].textContent;
+
+              // Menyimpan index untuk edit
+              document.getElementById('data-form').dataset.editIndex = index;
+            });
+          });
+
+          document.querySelectorAll('.btn-delete').forEach(btn => {
+            btn.addEventListener('click', function() {
+              const row = this.closest('tr');
+              const index = row.dataset.index;
+              if (confirm('Yakin ingin menghapus baris ini?')) {
+                fetch(`${scriptUrl}?index=${index}`, { method: 'DELETE' })
+                  .then(res => res.text())
+                  .then(() => loadSheetData());
+              }
+            });
+          });
         })
-        .catch(err => console.error('Gagal memuat data:', err));
+        .catch(err => {
+          console.error('Gagal memuat data:', err);
+        });
     }
 
-    // Kirim data dari form ke Google Apps Script
     document.getElementById('data-form').addEventListener('submit', function(e) {
       e.preventDefault();
       const formData = new FormData(this);
       const data = Object.fromEntries(formData.entries());
-
-      fetch(scriptUrl, {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: { 'Content-Type': 'application/json' }
-      })
-      .then(res => res.text())
-      .then(msg => {
-        alert('Data berhasil dikirim!');
-        this.reset();
-        loadSheetData();
-      })
-      .catch(err => {
-        alert('Terjadi kesalahan.');
-        console.error(err);
-      });
+      const isEdit = this.dataset.editIndex !== undefined;
+      
+      if (isEdit) {
+        data.index = this.dataset.editIndex;
+        fetch(scriptUrl, {
+          method: 'PUT',
+          body: JSON.stringify(data),
+          headers: { 'Content-Type': 'application/json' }
+        })
+        .then(res => res.text())
+        .then(() => {
+          alert('Data berhasil diperbarui!');
+          this.reset();
+          loadSheetData();
+        });
+      } else {
+        fetch(scriptUrl, {
+          method: 'POST',
+          body: JSON.stringify(data),
+          headers: { 'Content-Type': 'application/json' }
+        })
+        .then(res => res.text())
+        .then(() => {
+          alert('Data berhasil ditambahkan!');
+          this.reset();
+          loadSheetData();
+        });
+      }
     });
 
-    window.onload = loadSheetData;
+    loadSheetData();
   </script>
-
 </body>
 </html>
